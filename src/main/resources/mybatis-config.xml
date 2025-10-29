@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <!-- 交给spring配置的,这里可以删除 -->
+
+    <settings>
+        <!-- 设置使用log4j日志 -->
+        <setting name="logImpl" value="LOG4J"/>
+        <!-- 开启下划线转驼峰 -->
+        <!-- 把数据库create_time,变成createTime列 -->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+
+        <!-- 开启缓存(默认就是true) -->
+        <setting name="cacheEnabled" value="true"/>
+    </settings>
+
+</configuration>

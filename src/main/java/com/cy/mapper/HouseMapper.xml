@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cy.mapper.HouseMapper">
+    <insert id="addOne">
+        insert into house (
+        address,`floor`,roomNum,area,
+        dir,deco,air,price,rentStatus,
+        addTime,status)
+        values ( #{address}, #{floor}, #{roomNum},
+        #{area}, #{dir}, #{deco},
+        #{air}, #{price}, #{rentStatus}, #{addTime},
+        #{status})
+    </insert>
+    <update id="updateById">
+        update house
+        <set>
+            <if test="address != null">address = #{address},</if>
+            <if test="floor != null">`floor` = #{floor},</if>
+            <if test="roomNum != null">roomNum = #{roomNum},</if>
+            <if test="area != null">area = #{area},</if>
+            <if test="dir != null">dir = #{dir},</if>
+            <if test="deco != null">deco = #{deco},</if>
+            <if test="air != null">air = #{air},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="rentStatus != null">rentStatus = #{rentStatus},</if>
+            <if test="addTime != null">addTime = #{addTime},</if>
+            <if test="updateTime != null">updateTime = #{updateTime},</if>
+            <if test="status != null">status = #{status}</if>
+        </set>
+        where id = #{id}
+    </update>
+    <update id="deleteById">
+        update house set status =2 where id=#{id}
+    </update>
+
+    <update id="pldeleteByIds">
+        update house
+        set status = 2
+        where id in (
+        <!-- foreach 遍历 ids 列表，生成参数化的 IN 条件 -->
+        <foreach collection="array" item="id" separator="," open="(" close=")">
+            #{id} <!-- 占位符，MyBatis 自动参数化，避免注入 -->
+        </foreach>
+        )
+    </update>
+
+
+    <select id="findAll" resultType="com.cy.model.House">
+        select * from house
+        <where>
+            status = 1  <!-- 固定条件 -->
+            <!--句首的and是where标签在处理，不用些1=1...-->
+            <!-- 动态条件：地址不为空且不为空字符串 -->
+            <if test="addr != null and addr != ''">
+                and address = #{addr}
+            </if>
+
+            <!-- 动态条件：楼层不为空且不为空字符串 -->
+            <if test="floor != null and floor != ''">
+                and floor = #{floor}
+            </if>
+
+            <!-- 动态条件：面积不为空且不为空字符串 -->
+            <if test="area != null and area != ''">
+                and area = #{area}
+            </if>
+
+            <!-- 动态条件：装修情况排除空、空字符串和0 -->
+            <if test="deco != null and deco != '' and deco != '0'">
+                and deco = #{deco}
+            </if>
+        </where>
+    </select>
+
+</mapper>

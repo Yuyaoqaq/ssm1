@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cy.mapper.LesseeMapper">
+    <insert id="addOne">
+        insert into lessee (
+        name, tel, sex,
+        np, idCard, addTime
+        ) values (
+        #{name}, #{tel}, #{sex},
+        #{np}, #{idCard}, #{addTime}
+        )
+    </insert>
+    <update id="updateById">
+        update lessee
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="tel != null and tel != ''">
+                tel = #{tel},
+            </if>
+            <if test="sex != null and sex != ''">
+                sex = #{sex},
+            </if>
+            <if test="np != null and np != ''">
+                np = #{np},
+            </if>
+            <if test="idCard != null and idCard != ''">
+                idCard = #{idCard},
+            </if>
+            <if test="addTime != null">
+                addTime = #{addTime}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <delete id="deleteById">
+        delete from lessee where id=#{id}
+    </delete>
+    <delete id="pldeleteByIds">
+        delete from lessee
+        where id in (
+        <!-- foreach 遍历 ids 列表，生成参数化的 IN 条件 -->
+        <foreach collection="array" item="id" separator="," open="(" close=")">
+            #{id} <!-- 占位符，MyBatis 自动参数化，避免注入 -->
+        </foreach>
+        )
+    </delete>
+
+    <select id="findAll" resultType="com.cy.model.Lessee">
+        select * from lessee
+        <where>
+            <!-- 处理 name 模糊查询 -->
+            <if test="name != null and name != ''">
+                and name like concat('%', #{name}, '%')
+            </if>
+            <!-- 处理 idCard 精确查询 -->
+            <if test="idCard != null and idCard != ''">
+                and idCard = #{condition.idCard}
+            </if>
+        </where>
+    </select>
+</mapper>

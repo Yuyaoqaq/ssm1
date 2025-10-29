@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cy.mapper.ContractMapper">
+    <insert id="addOne">
+        insert into contract (
+        num, hid, lid,
+        time, startTime, endTime,
+        totalMoney, payType
+        ) values (
+        #{num}, #{hid}, #{lid},#{time},
+        #{startTime},#{endTime},#{totalMoney},
+        #{payType}
+        )
+    </insert>
+    <update id="updateById">
+        update contract
+        <set>
+            <if test="num != null and num != ''">
+                num = #{num},
+            </if>
+            <if test="hid != null">
+                hid = #{hid},
+            </if>
+            <if test="lid != null">
+                lid = #{lid},
+            </if>
+            <if test="time != null">
+                time = #{time},
+            </if>
+            <if test="startTime != null">
+                startTime = #{startTime},
+            </if>
+            <if test="endTime != null">
+                endTime = #{endTime},
+            </if>
+            <if test="totalMoney != null">
+                totalMoney = #{totalMoney},
+            </if>
+            <if test="payType != null">
+                payType = #{payType}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <delete id="deleteById">
+        delete from contract where id=#{id}
+    </delete>
+    <delete id="pldeleteByIds">
+        delete from contract
+        where id in (
+        <!-- foreach 遍历 ids 列表，生成参数化的 IN 条件 -->
+        <foreach collection="array" item="id" separator="," open="(" close=")">
+            #{id} <!-- 占位符，MyBatis 自动参数化，避免注入 -->
+        </foreach>
+        )
+    </delete>
+
+    <resultMap id="contractVOresultMap" type="com.cy.model.VO.ContractVO">
+        <!-- 1.Contract 表字段映射（c.* 对应的字段） -->
+        <id column="id" property="id"/> <!-- 合同表主键为 id -->
+        <result column="num" property="num"/>
+        <result column="time" property="time"/>
+        <result column="lid" property="lid"/>
+        <result column="hid" property="hid"/>
+        <result column="startTime" property="startTime"/>
+        <result column="endTime" property="endTime"/>
+        <result column="totalMoney" property="totalMoney"/>
+        <result column="payType" property="payType"/>
+        <!-- 2. 关联House对象（只映射address字段） -->
+        <association property="house" javaType="com.cy.model.House">
+            <!-- 只需要house表的address字段 -->
+            <result column="address" property="address"/>
+            <!-- 注意：column是数据库查询结果中的字段别名，需与SQL中的别名一致 -->
+        </association>
+
+        <!-- 3. 关联Lessee对象（只映射name字段） -->
+        <association property="lessee" javaType="com.cy.model.Lessee">
+            <!-- 只需要lessee表的name字段 -->
+            <result column="name" property="name"/>
+            <!-- 同样，column需与SQL中的别名一致 -->
+        </association>
+    </resultMap>
+
+    <select id="findAll" resultMap="contractVOresultMap">
+        select
+        c.*, l.name, h.address
+        from contract c
+        left join lessee l on c.lid = l.id
+        left join house h on c.hid = h.id
+        <where>
+            <if test="num != null and num != ''">
+                and c.num = #{num}
+            </if>
+        </where>
+    </select>
+</mapper>
